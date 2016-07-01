@@ -1,4 +1,4 @@
-package com.instinctools.domain_model;
+package com.instinctools.domain;
 
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
