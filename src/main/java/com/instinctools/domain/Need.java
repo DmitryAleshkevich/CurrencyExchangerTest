@@ -23,9 +23,10 @@ public class Need {
     @Relationship(type="proposed")
     private Set<Currency> proposedCurrencySet;
 
-    public Need(Long id, String content) {
-        this.id = id;
+    public Need(String content, Set<Currency> wantedCurrencySet, Set<Currency> proposedCurrencySet) {
         this.content = content;
+        this.wantedCurrencySet = wantedCurrencySet;
+        this.proposedCurrencySet = proposedCurrencySet;
     }
 
     public Need() {}
@@ -46,6 +47,13 @@ public class Need {
         this.id = id;
     }
 
+    public Set<Currency> getWantedCurrencySet() {
+        return wantedCurrencySet;
+    }
+
+    public Set<Currency> getProposedCurrencySet() {
+        return proposedCurrencySet;
+    }
 
     @Override
     public boolean equals(Object o) {

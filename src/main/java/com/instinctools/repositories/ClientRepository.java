@@ -7,4 +7,5 @@ import org.springframework.data.neo4j.repository.GraphRepository;
  * Created by aldm on 1.7.16.
  */
 public interface ClientRepository extends GraphRepository<Client> {
+    Client findByLoginAndPassword(String login,String password);
 }

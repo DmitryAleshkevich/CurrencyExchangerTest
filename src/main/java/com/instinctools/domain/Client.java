@@ -56,6 +56,9 @@ public class Client {
         this.password = password;
     }
 
+    public Set<Need> getNeedsSet() {
+        return needsSet;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -5,6 +5,7 @@ import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
@@ -14,10 +15,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableNeo4jRepositories(basePackages = "com.instinctools.repositories")
 @EnableTransactionManagement
+@ComponentScan(basePackages = "com.instinctools")
 public class CurrencyExchangerApplication extends Neo4jConfiguration{
 
 	public static void main(String[] args) {
-		SpringApplication.run(CurrencyExchangerApplication.class, args);
+        SpringApplication.run(CurrencyExchangerApplication.class, args);
 	}
 
 	@Bean
