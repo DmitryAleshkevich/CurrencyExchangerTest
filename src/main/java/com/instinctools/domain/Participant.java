@@ -16,7 +16,7 @@ public class Participant {
     private boolean agreed;
 
     @StartNode
-    private Client client;
+    private Need need;
 
     @EndNode
     private Deal deal;

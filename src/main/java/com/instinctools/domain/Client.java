@@ -21,8 +21,8 @@ public class Client {
     @Relationship(type="own")
     private Set<Currency> ownCurrencySet;
 
-    @Relationship(type="wanted")
-    private Set<Currency> wantedCurrencySet;
+    @Relationship(type="need")
+    private Set<Need> needsSet;
 
     public Client(Long id, String login, String password) {
         this.id = id;
