@@ -2,13 +2,23 @@ package com.instinctools.services;
 
 import com.instinctools.configs.CurrencyExchangerApplication;
 import com.instinctools.configs.SecurityConfig;
+import com.instinctools.domain.Client;
 import com.instinctools.domain.Currency;
+import com.instinctools.domain.Need;
+import com.instinctools.repositories.ClientRepository;
+import com.instinctools.repositories.CurrencyRepository;
+import com.instinctools.repositories.NeedRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -25,9 +35,18 @@ public class ExchangeServiceImplTest {
     @Autowired
     private ExchangeService service;
 
+    @Autowired
+    private NeedRepository needRepository;
+
+    @Autowired
+    private CurrencyRepository currencyRepository;
+
+    @Autowired
+    private ClientRepository clientRepository;
+
     @Test
     public void getCurrencies() throws Exception {
-        Set<Currency> currencies = service.getCurrencies();
+        final Set<Currency> currencies = service.getCurrencies();
         Currency usd = new Currency(new Long(840),"USD", 0);
         Currency euro = new Currency(new Long(978),"EUR", 0);
         assertTrue(currencies.contains(usd));
@@ -36,7 +55,21 @@ public class ExchangeServiceImplTest {
 
     @Test
     public void storeNeed() throws Exception {
-
+        final String content = "Test";
+        final Currency wantedCurrency = new Currency(new Long(840),"USD",10);
+        currencyRepository.save(wantedCurrency);
+        final Currency proposedCurrency = new Currency(new Long(978),"EUR",8);
+        currencyRepository.save(proposedCurrency);
+        Set<Currency> wanted = new HashSet<>();
+        wanted.add(wantedCurrency);
+        Set<Currency> proposed = new HashSet<>();
+        proposed.add(proposedCurrency);
+        service.storeNeed(content,wanted,proposed);
+        final Need testNeed = needRepository.findOneByContent(content);
+        assertNotNull(testNeed);
+        needRepository.delete(testNeed);
+        currencyRepository.delete(wantedCurrency);
+        currencyRepository.delete(proposedCurrency);
     }
 
     @Test
@@ -45,8 +78,46 @@ public class ExchangeServiceImplTest {
     }
 
     @Test
+    @WithMockUser
     public void findDeals() throws Exception {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        Client testClient = new Client("user","password");
+        final String content = "Test";
+        final Currency wantedCurrency = new Currency(new Long(840),"USD",10);
+        currencyRepository.save(wantedCurrency);
+        final Currency proposedCurrency = new Currency(new Long(978),"EUR",8);
+        currencyRepository.save(proposedCurrency);
+        Set<Currency> wanted = new HashSet<>();
+        wanted.add(wantedCurrency);
+        Set<Currency> proposed = new HashSet<>();
+        proposed.add(proposedCurrency);
+        Need testNeed = new Need(content,wanted,proposed);
+        needRepository.save(testNeed);
+        Set<Need> needs = new HashSet<>();
+        needs.add(testNeed);
+        testClient.setNeedsSet(needs);
+        clientRepository.save(testClient);
+
+        Client testClient2 = new Client("user2","password2");
+        Need testNeed2 = new Need(content + "1", proposed, wanted);
+        needRepository.save(testNeed2);
+        Set<Need> needs2 = new HashSet<>();
+        needs2.add(testNeed2);
+        testClient2.setNeedsSet(needs2);
+        clientRepository.save(testClient2);
+
+        final Client testedClient = clientRepository.findByLoginAndPassword(authentication.getName(),authentication.getCredentials().toString());
+        assertEquals(testClient,testedClient);
+
+
+
+        currencyRepository.delete(wantedCurrency);
+        currencyRepository.delete(proposedCurrency);
+        needRepository.delete(testNeed);
+        clientRepository.delete(testClient);
+        needRepository.delete(testNeed2);
+        clientRepository.delete(testClient2);
     }
 
 }

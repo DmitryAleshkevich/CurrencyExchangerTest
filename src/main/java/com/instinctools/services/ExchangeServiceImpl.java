@@ -50,17 +50,17 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public Set<Deal> findDeals(double deltaNeed, double deltaProposed) {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        /*final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final Client client = clientRepository.findByLoginAndPassword(authentication.getName(),authentication.getCredentials().toString());
-        final Set<Need> clientNeeds = client.getNeedsSet();
+        final Set<Need> clientNeeds = client.getNeedsSet();*/
         return null;
     }
 
     private Set<Deal> getDealsByNeeds(Set<Need> needs, double deltaNeed, double deltaProposed) {
-        needs.forEach(it->{
+        /*needs.forEach(it->{
             Set<Need> needSet = new HashSet<>();
-            needSet.addAll(needRepository.findAvailableNeeds(it.getWantedCurrencySet(),it.getProposedCurrencySet(),deltaNeed,deltaProposed));
-        });
+            //needSet.addAll(needRepository.findAvailableNeeds(it.getWantedCurrencySet(),it.getProposedCurrencySet(),deltaNeed,deltaProposed));
+        });*/
         return null;
     }
 }

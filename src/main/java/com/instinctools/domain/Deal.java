@@ -64,6 +64,6 @@ public class Deal {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return id == null ? System.identityHashCode(this) : id.hashCode();
     }
 }

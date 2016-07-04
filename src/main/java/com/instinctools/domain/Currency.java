@@ -61,6 +61,6 @@ public class Currency {
 
     @Override
     public int hashCode() {
-        return isoCode.hashCode();
+        return isoCode == null ? System.identityHashCode(this) : isoCode.hashCode();
     }
 }

@@ -69,6 +69,6 @@ public class Need {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return id == null ? System.identityHashCode(this) : id.hashCode();
     }
 }

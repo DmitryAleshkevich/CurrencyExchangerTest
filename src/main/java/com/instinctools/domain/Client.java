@@ -24,8 +24,7 @@ public class Client {
     @Relationship(type="need")
     private Set<Need> needsSet;
 
-    public Client(Long id, String login, String password) {
-        this.id = id;
+    public Client(String login, String password) {
         this.login = login;
         this.password = password;
     }
@@ -60,6 +59,10 @@ public class Client {
         return needsSet;
     }
 
+    public void setNeedsSet(Set<Need> needsSet) {
+        this.needsSet = needsSet;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -74,6 +77,6 @@ public class Client {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return id == null ? System.identityHashCode(this) : id.hashCode();
     }
 }
