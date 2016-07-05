@@ -10,7 +10,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 public class Currency {
 
     @GraphId
-    private Long isoCode;
+    private Long id;
     private String name;
     private double sum;
 
@@ -21,12 +21,12 @@ public class Currency {
 
     public Currency() {}
 
-    public Long getIsoCode() {
-        return isoCode;
+    public Long getId() {
+        return id;
     }
 
-    public void setIsoCode(Long isoCode) {
-        this.isoCode = isoCode;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -55,11 +55,11 @@ public class Currency {
             return false;
         }
         Currency currency = (Currency) o;
-        return isoCode.equals(currency.isoCode);
+        return name.equals(currency.name);
     }
 
     @Override
     public int hashCode() {
-        return isoCode == null ? System.identityHashCode(this) : isoCode.hashCode();
+        return name == null ? System.identityHashCode(this) : name.hashCode();
     }
 }

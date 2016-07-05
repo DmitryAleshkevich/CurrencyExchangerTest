@@ -43,20 +43,20 @@ public class Participant {
         this.agreed = agreed;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Participant that = (Participant) o;
-        return id.equals(that.id);
+    public Need getNeed() {
+        return need;
     }
 
-    @Override
-    public int hashCode() {
-        return id == null ? System.identityHashCode(this) : id.hashCode();
+    public void setNeed(Need need) {
+        this.need = need;
     }
+
+    public Deal getDeal() {
+        return deal;
+    }
+
+    public void setDeal(Deal deal) {
+        this.deal = deal;
+    }
+
 }

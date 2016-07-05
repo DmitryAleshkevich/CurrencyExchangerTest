@@ -63,6 +63,14 @@ public class Client {
         this.needsSet = needsSet;
     }
 
+    public Set<Currency> getOwnCurrencySet() {
+        return ownCurrencySet;
+    }
+
+    public void setOwnCurrencySet(Set<Currency> ownCurrencySet) {
+        this.ownCurrencySet = ownCurrencySet;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -72,11 +80,24 @@ public class Client {
             return false;
         }
         Client client = (Client) o;
-        return id.equals(client.id);
+        return login.equals(client.login) && password.equals(client.password);
     }
 
     @Override
     public int hashCode() {
-        return id == null ? System.identityHashCode(this) : id.hashCode();
+        if (login == null)
+        {
+            if (password == null)
+            {
+                return System.identityHashCode(this);
+            }
+            return password.hashCode();
+        }
+        if (password == null)
+        {
+            return login.hashCode();
+        }
+
+        return password.hashCode() + login.hashCode();
     }
 }

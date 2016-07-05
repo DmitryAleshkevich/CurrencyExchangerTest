@@ -17,10 +17,8 @@ public class Deal {
     private Date dateProposed;
     private Date dateAccepted;
 
-    public Deal(Long id, Date dateProposed, Date dateAccepted) {
-        this.id = id;
+    public Deal(Date dateProposed) {
         this.dateProposed = dateProposed;
-        this.dateAccepted = dateAccepted;
     }
 
     public Deal() {}
@@ -49,21 +47,4 @@ public class Deal {
         this.dateAccepted = dateAccepted;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Deal deal = (Deal) o;
-        return id.equals(deal.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id == null ? System.identityHashCode(this) : id.hashCode();
-    }
 }

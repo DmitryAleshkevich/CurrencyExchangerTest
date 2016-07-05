@@ -2,6 +2,7 @@ package com.instinctools.services;
 
 import com.instinctools.domain.Currency;
 import com.instinctools.domain.Deal;
+import com.instinctools.domain.Participant;
 
 import java.util.Set;
 
@@ -10,7 +11,8 @@ import java.util.Set;
  */
 public interface ExchangeService {
     Set<Currency> getCurrencies();
-    Set<Deal> findDeals(double deltaNeed, double deltaProposed);
+    Set<Participant> findDeals();
     void storeDeals(Set<Deal> deals);
     void storeNeed(String content, Set<Currency> wantedCurrencySet, Set<Currency> proposedCurrencySet);
+    void putMoney(Currency currency);
 }

@@ -1,11 +1,10 @@
 package com.instinctools.services;
 
-import com.instinctools.domain.Client;
-import com.instinctools.domain.Currency;
-import com.instinctools.domain.Deal;
-import com.instinctools.domain.Need;
+import com.instinctools.domain.*;
 import com.instinctools.repositories.ClientRepository;
+import com.instinctools.repositories.DealRepository;
 import com.instinctools.repositories.NeedRepository;
+import com.instinctools.repositories.ParticipantRepository;
 import com.instinctools.utils.CurrencyProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -13,8 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by aldm on 1.7.16.
@@ -33,6 +34,12 @@ public class ExchangeServiceImpl implements ExchangeService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private DealRepository dealRepository;
+
+    @Autowired
+    private ParticipantRepository participantRepository;
+
     @Override
     public Set<Currency> getCurrencies() {
         return currencyProvider.getCurrencies();
@@ -44,23 +51,55 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
+    public void putMoney(Currency currency) {
+        final Client client = getClient();
+        HashSet<Currency> currencies = new HashSet<>();
+        currencies.add(currency);
+        client.setOwnCurrencySet(currencies);
+        clientRepository.save(client);
+    }
+
+    @Override
     public void storeDeals(Set<Deal> deals) {
 
     }
 
     @Override
-    public Set<Deal> findDeals(double deltaNeed, double deltaProposed) {
-        /*final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final Client client = clientRepository.findByLoginAndPassword(authentication.getName(),authentication.getCredentials().toString());
-        final Set<Need> clientNeeds = client.getNeedsSet();*/
-        return null;
+    public Set<Participant> findDeals() {
+        final Client client = getClient();
+        final Set<Need> needs = client.getNeedsSet();
+        final Set<Need> foundedNeeds = findNeeds(needs);
+        return producePossibleDeals(foundedNeeds);
     }
 
-    private Set<Deal> getDealsByNeeds(Set<Need> needs, double deltaNeed, double deltaProposed) {
-        /*needs.forEach(it->{
-            Set<Need> needSet = new HashSet<>();
-            //needSet.addAll(needRepository.findAvailableNeeds(it.getWantedCurrencySet(),it.getProposedCurrencySet(),deltaNeed,deltaProposed));
-        });*/
-        return null;
+    private Set<Participant> producePossibleDeals(Set<Need> foundedNeeds) {
+        Set<Participant> producedDeals = new HashSet<>();
+        foundedNeeds.forEach(it->{
+            Deal deal = new Deal(new Date());
+            dealRepository.save(deal);
+            Participant participant = new Participant();
+            participant.setNeed(it);
+            participant.setDeal(deal);
+            participantRepository.save(participant);
+            producedDeals.add(participant);
+        });
+
+        return producedDeals;
     }
+
+    private Set<Need> findNeeds(Set<Need> needs) {
+        Set<Need> foundedNeeds = new HashSet<>();
+        needs.forEach(it->{
+            Set<Long> wantedIDs = it.getWantedCurrencySet().stream().map(x->x.getId()).collect(Collectors.toSet());
+            Set<Long> proposedIDs = it.getProposedCurrencySet().stream().map(x->x.getId()).collect(Collectors.toSet());
+            foundedNeeds.addAll(needRepository.findAvailableNeeds(wantedIDs,proposedIDs));
+        });
+        return foundedNeeds;
+    }
+
+    private Client getClient() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return clientRepository.findByLoginAndPassword(authentication.getName(),authentication.getCredentials().toString());
+    }
+
 }
