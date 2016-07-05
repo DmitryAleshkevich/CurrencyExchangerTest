@@ -14,8 +14,7 @@ public class Currency {
     private String name;
     private double sum;
 
-    public Currency(Long isoCode, String name, double sum) {
-        this.isoCode = isoCode;
+    public Currency(String name, double sum) {
         this.name = name;
         this.sum = sum;
     }

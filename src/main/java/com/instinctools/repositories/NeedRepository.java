@@ -13,9 +13,8 @@ import java.util.Set;
  */
 public interface NeedRepository extends GraphRepository<Need>{
 
-    /*@Query("MATCH ")
-    Set<Need> findAvailableNeeds(@Param("wantedCurrencySet") Set<Currency> wantedCurrencySet, @Param("proposedCurrencySet") Set<Currency> proposedCurrencySet,
-                                @Param("deltaNeed") double deltaNeed, @Param("deltaProposed") double deltaProposed);*/
+    @Query("MATCH (c2)<-[r2:proposed]-(n)-[r1:wanted]->(c1) WHERE id(c2) IN {0} AND id(c1) IN {1} RETURN COLLECT(DISTINCT n)")
+    Set<Need> findAvailableNeeds(Set<Long> wantedCurrencySet, Set<Long> proposedCurrencySet);
 
     Need findOneByContent(String content);
 }

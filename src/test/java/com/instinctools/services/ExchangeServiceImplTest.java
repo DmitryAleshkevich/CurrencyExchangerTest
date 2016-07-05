@@ -20,6 +20,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -47,8 +48,8 @@ public class ExchangeServiceImplTest {
     @Test
     public void getCurrencies() throws Exception {
         final Set<Currency> currencies = service.getCurrencies();
-        Currency usd = new Currency(new Long(840),"USD", 0);
-        Currency euro = new Currency(new Long(978),"EUR", 0);
+        Currency usd = new Currency("USD", 0);
+        Currency euro = new Currency("EUR", 0);
         assertTrue(currencies.contains(usd));
         assertTrue(currencies.contains(euro));
     }
@@ -56,9 +57,9 @@ public class ExchangeServiceImplTest {
     @Test
     public void storeNeed() throws Exception {
         final String content = "Test";
-        final Currency wantedCurrency = new Currency(new Long(840),"USD",10);
+        final Currency wantedCurrency = new Currency("USD",10);
         currencyRepository.save(wantedCurrency);
-        final Currency proposedCurrency = new Currency(new Long(978),"EUR",8);
+        final Currency proposedCurrency = new Currency("EUR",8);
         currencyRepository.save(proposedCurrency);
         Set<Currency> wanted = new HashSet<>();
         wanted.add(wantedCurrency);
@@ -84,9 +85,9 @@ public class ExchangeServiceImplTest {
 
         Client testClient = new Client("user","password");
         final String content = "Test";
-        final Currency wantedCurrency = new Currency(new Long(840),"USD",10);
+        final Currency wantedCurrency = new Currency("USD",10);
         currencyRepository.save(wantedCurrency);
-        final Currency proposedCurrency = new Currency(new Long(978),"EUR",8);
+        final Currency proposedCurrency = new Currency("EUR",8);
         currencyRepository.save(proposedCurrency);
         Set<Currency> wanted = new HashSet<>();
         wanted.add(wantedCurrency);
@@ -108,9 +109,15 @@ public class ExchangeServiceImplTest {
         clientRepository.save(testClient2);
 
         final Client testedClient = clientRepository.findByLoginAndPassword(authentication.getName(),authentication.getCredentials().toString());
-        assertEquals(testClient,testedClient);
 
+        final Set<Need> testedNeeds = testedClient.getNeedsSet();
+        Set<Need> foundedNeeds = new HashSet<>();
 
+        testedNeeds.forEach(it->{
+            Set<Long> wantedIDs = it.getWantedCurrencySet().stream().map(x->x.getIsoCode()).collect(Collectors.toSet());
+            Set<Long> proposedIDs = it.getProposedCurrencySet().stream().map(x->x.getIsoCode()).collect(Collectors.toSet());
+            foundedNeeds.addAll(needRepository.findAvailableNeeds(wantedIDs,proposedIDs));
+        });
 
         currencyRepository.delete(wantedCurrency);
         currencyRepository.delete(proposedCurrency);
@@ -118,6 +125,9 @@ public class ExchangeServiceImplTest {
         clientRepository.delete(testClient);
         needRepository.delete(testNeed2);
         clientRepository.delete(testClient2);
+
+        assertEquals(testClient,testedClient);
+        assertTrue(foundedNeeds.contains(testNeed2));
     }
 
 }

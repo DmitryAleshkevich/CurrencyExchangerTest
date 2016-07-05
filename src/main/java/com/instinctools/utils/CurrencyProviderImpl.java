@@ -13,8 +13,8 @@ import java.util.Set;
 public class CurrencyProviderImpl implements CurrencyProvider{
     @Override
     public Set<Currency> getCurrencies() {
-        Currency usd = new Currency(new Long(840),"USD", 0);
-        Currency euro = new Currency(new Long(978),"EUR", 0);
+        Currency usd = new Currency("USD", 0);
+        Currency euro = new Currency("EUR", 0);
         Set<Currency> currencies = new HashSet<>();
         currencies.add(usd);
         currencies.add(euro);
