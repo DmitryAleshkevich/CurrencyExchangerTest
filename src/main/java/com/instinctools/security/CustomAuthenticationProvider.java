@@ -1,5 +1,8 @@
 package com.instinctools.security;
 
+import com.instinctools.domain.Client;
+import com.instinctools.repositories.ClientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,13 +21,16 @@ import java.util.List;
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
+    @Autowired
+    private ClientRepository clientRepository;
+
     @Override
     public Authentication authenticate(Authentication authentication) {
         final String username = authentication.getPrincipal().toString();
         final String password = authentication.getCredentials().toString();
-        final boolean userExists = /*ibraryService.isRegistered(username,password)*/ true;
+        final Client client = clientRepository.findByLoginAndPassword(username,password);
 
-        if (userExists) {
+        if (client != null) {
             List<GrantedAuthority> roles = new ArrayList<>();
             roles.add(new SimpleGrantedAuthority("ROLE_USER"));
             return new UsernamePasswordAuthenticationToken(username, password, roles);
