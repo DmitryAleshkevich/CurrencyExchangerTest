@@ -12,7 +12,7 @@ import java.util.Set;
 public interface ExchangeService {
     Set<Currency> getCurrencies();
     Set<Participant> findDeals();
-    void storeDeals(Set<Deal> deals);
+    void storeDeals(Set<Participant> deals);
     void storeNeed(String content, Set<Currency> wantedCurrencySet, Set<Currency> proposedCurrencySet);
     void putMoney(Currency currency);
 }

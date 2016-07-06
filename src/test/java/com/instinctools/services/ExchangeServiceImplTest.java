@@ -107,8 +107,10 @@ public class ExchangeServiceImplTest {
     }
 
     @Test
-    public void storeDeals() throws Exception {
-
+    @WithMockUser
+    public void putMoney() throws Exception {
+        service.putMoney(wantedCurrency);
+        assertTrue(testClient.getOwnCurrencySet().contains(wantedCurrency));
     }
 
     @Test

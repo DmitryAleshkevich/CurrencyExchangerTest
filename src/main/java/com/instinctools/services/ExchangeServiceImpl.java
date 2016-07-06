@@ -6,6 +6,8 @@ import com.instinctools.repositories.DealRepository;
 import com.instinctools.repositories.NeedRepository;
 import com.instinctools.repositories.ParticipantRepository;
 import com.instinctools.utils.CurrencyProvider;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class ExchangeServiceImpl implements ExchangeService {
+
+    private static final Logger logger = LogManager.getLogger(ExchangeServiceImpl.class);
 
     @Autowired
     private CurrencyProvider currencyProvider;
@@ -52,7 +56,7 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public void putMoney(Currency currency) {
-        final Client client = getClient();
+        final Client client = getClientByCredentials();
         HashSet<Currency> currencies = new HashSet<>();
         currencies.add(currency);
         client.setOwnCurrencySet(currencies);
@@ -60,15 +64,24 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
-    public void storeDeals(Set<Deal> deals) {
-
+    public void storeDeals(Set<Participant> participants) {
+        participants.forEach(it->{
+            it.setAgreed(true);
+            it.getDeal().setDateAccepted(new Date());
+        });
     }
 
     @Override
     public Set<Participant> findDeals() {
-        final Client client = getClient();
+        final Client client = getClientByCredentials();
         final Set<Need> needs = client.getNeedsSet();
+        if (needs.isEmpty()) {
+            logger.info("Client " + client.getLogin() + " has no needs!");
+        }
         final Set<Need> foundedNeeds = findNeeds(needs);
+        if (foundedNeeds.isEmpty()) {
+            logger.info("No possible deals found for " + client.getLogin() + " needs!");
+        }
         return producePossibleDeals(foundedNeeds);
     }
 
@@ -97,7 +110,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         return foundedNeeds;
     }
 
-    private Client getClient() {
+    private Client getClientByCredentials() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return clientRepository.findByLoginAndPassword(authentication.getName(),authentication.getCredentials().toString());
     }
