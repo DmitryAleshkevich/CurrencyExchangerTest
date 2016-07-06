@@ -57,9 +57,8 @@ public class ExchangeServiceImpl implements ExchangeService {
     @Override
     public void putMoney(Currency currency) {
         final Client client = getClientByCredentials();
-        HashSet<Currency> currencies = new HashSet<>();
-        currencies.add(currency);
-        client.setOwnCurrencySet(currencies);
+        Set<Currency> currenciesModified = getNewCurrenciesForClient(currency, client.getOwnCurrencySet());
+        client.setOwnCurrencySet(currenciesModified);
         clientRepository.save(client);
     }
 
@@ -115,4 +114,19 @@ public class ExchangeServiceImpl implements ExchangeService {
         return clientRepository.findByLoginAndPassword(authentication.getName(),authentication.getCredentials().toString());
     }
 
+    private Set<Currency> getNewCurrenciesForClient(Currency currency, Set<Currency> currencies) {
+        boolean founded = false;
+        for (Currency c : currencies) {
+            if (c.getName() == currency.getName())
+            {
+                c.setSum(currency.getSum() + currency.getSum());
+                founded = true;
+                break;
+            }
+        }
+        if (!founded) {
+            currencies.add(currency);
+        }
+        return currencies;
+    }
 }
