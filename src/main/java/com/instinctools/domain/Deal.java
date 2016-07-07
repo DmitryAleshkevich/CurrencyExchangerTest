@@ -17,8 +17,11 @@ public class Deal {
     private Date dateProposed;
     private Date dateAccepted;
 
-    public Deal(Date dateProposed) {
+    private Client client;
+
+    public Deal(Date dateProposed, Client client) {
         this.dateProposed = dateProposed;
+        this.client = client;
     }
 
     public Deal() {}
@@ -41,6 +44,10 @@ public class Deal {
 
     public Date getDateAccepted() {
         return dateAccepted;
+    }
+
+    public Client getClient() {
+        return client;
     }
 
     public void setDateAccepted(Date dateAccepted) {

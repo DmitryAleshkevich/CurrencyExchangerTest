@@ -77,13 +77,13 @@ public class ExchangeServiceImplTest {
         currencyRepository.save(proposedCurrency);
         wanted.add(wantedCurrency);
         proposed.add(proposedCurrency);
-        testNeed = new Need(content,wanted,proposed);
+        testNeed = new Need(content, testClient, wanted, proposed);
         needRepository.save(testNeed);
         Set<Need> needs = new HashSet<>();
         needs.add(testNeed);
         testClient.setNeedsSet(needs);
         clientRepository.save(testClient);
-        testNeed2 = new Need(content + "1", proposed, wanted);
+        testNeed2 = new Need(content + "1", testClient2, proposed, wanted);
         needRepository.save(testNeed2);
         Set<Need> needs2 = new HashSet<>();
         needs2.add(testNeed2);

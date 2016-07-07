@@ -51,7 +51,8 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public void storeNeed(String content, Set<Currency> wantedCurrencySet, Set<Currency> proposedCurrencySet) {
-        needRepository.save(new Need(content,wantedCurrencySet,proposedCurrencySet));
+        final Client client = getClientByCredentials();
+        needRepository.save(new Need(content,client,wantedCurrencySet,proposedCurrencySet));
     }
 
     @Override
@@ -63,11 +64,27 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
-    public void storeDeals(Set<Participant> participants) {
-        participants.forEach(it->{
-            it.setAgreed(true);
-            it.getDeal().setDateAccepted(new Date());
-        });
+    public String storeDeals(Set<Participant> participants) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Participant participant: participants) {
+            if (!checkBalanceForDeal(participant.getDeal().getClient(),participant.getNeed().getProposedCurrencySet())) {
+                stringBuilder.append("You haven`t enough money for deal with id ");
+                stringBuilder.append(participant.getDeal().getId());
+                stringBuilder.append("!");
+                stringBuilder.append("\"\\n\"");
+                continue;
+            }
+            if (!checkBalanceForDeal(participant.getNeed().getClient(),participant.getNeed().getWantedCurrencySet())) {
+                stringBuilder.append("Producer haven`t enough money for deal with id ");
+                stringBuilder.append(participant.getDeal().getId());
+                stringBuilder.append("!");
+                stringBuilder.append("\"\\n\"");
+                continue;
+            }
+            participant.setAgreed(true);
+            participant.getDeal().setDateAccepted(new Date());
+        }
+        return stringBuilder.toString().isEmpty() ? "success" : stringBuilder.toString();
     }
 
     @Override
@@ -81,13 +98,13 @@ public class ExchangeServiceImpl implements ExchangeService {
         if (foundedNeeds.isEmpty()) {
             logger.info("No possible deals found for " + client.getLogin() + " needs!");
         }
-        return producePossibleDeals(foundedNeeds);
+        return producePossibleDeals(foundedNeeds,client);
     }
 
-    private Set<Participant> producePossibleDeals(Set<Need> foundedNeeds) {
+    private Set<Participant> producePossibleDeals(Set<Need> foundedNeeds, Client client) {
         Set<Participant> producedDeals = new HashSet<>();
         foundedNeeds.forEach(it->{
-            Deal deal = new Deal(new Date());
+            Deal deal = new Deal(new Date(),client);
             dealRepository.save(deal);
             Participant participant = new Participant();
             participant.setNeed(it);
@@ -128,5 +145,27 @@ public class ExchangeServiceImpl implements ExchangeService {
             currencies.add(currency);
         }
         return currencies;
+    }
+
+    private boolean checkBalanceForDeal(Client client, Set<Currency> currencies) {
+        Set<Currency> ownCurrencies = client.getOwnCurrencySet();
+        for (Currency currencyOfDeal : currencies) {
+            boolean foundMatch = false;
+            for (Currency ownCurrency : ownCurrencies) {
+                if (ownCurrency.getName() == currencyOfDeal.getName()) {
+                    if (ownCurrency.getSum() < currencyOfDeal.getSum()) {
+                        return false;
+                    }
+                    else {
+                        foundMatch = true;
+                        break;
+                    }
+                }
+            }
+            if (!foundMatch) {
+                return false;
+            }
+        }
+        return true;
     }
 }
