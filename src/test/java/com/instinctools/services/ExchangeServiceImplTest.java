@@ -89,7 +89,6 @@ public class ExchangeServiceImplTest {
         needs2.add(testNeed2);
         testClient2.setNeedsSet(needs2);
         clientRepository.save(testClient2);
-
     }
 
     @Test

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,8 +120,8 @@ public class ExchangeServiceImpl implements ExchangeService {
     private Set<Need> findNeeds(Set<Need> needs) {
         Set<Need> foundedNeeds = new HashSet<>();
         needs.forEach(it->{
-            Set<Long> wantedIDs = it.getWantedCurrencySet().stream().map(x->x.getId()).collect(Collectors.toSet());
-            Set<Long> proposedIDs = it.getProposedCurrencySet().stream().map(x->x.getId()).collect(Collectors.toSet());
+            Set<Long> wantedIDs = it.getWantedCurrencySet().stream().map(Currency::getId).collect(Collectors.toSet());
+            Set<Long> proposedIDs = it.getProposedCurrencySet().stream().map(Currency::getId).collect(Collectors.toSet());
             foundedNeeds.addAll(needRepository.findAvailableNeeds(wantedIDs,proposedIDs));
         });
         return foundedNeeds;
@@ -134,7 +135,7 @@ public class ExchangeServiceImpl implements ExchangeService {
     private Set<Currency> getNewCurrenciesForClient(Currency currency, Set<Currency> currencies) {
         boolean founded = false;
         for (Currency c : currencies) {
-            if (c.getName() == currency.getName())
+            if (Objects.equals(c.getName(), currency.getName()))
             {
                 c.setSum(currency.getSum() + currency.getSum());
                 founded = true;
@@ -152,7 +153,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         for (Currency currencyOfDeal : currencies) {
             boolean foundMatch = false;
             for (Currency ownCurrency : ownCurrencies) {
-                if (ownCurrency.getName() == currencyOfDeal.getName()) {
+                if (Objects.equals(ownCurrency.getName(), currencyOfDeal.getName())) {
                     if (ownCurrency.getSum() < currencyOfDeal.getSum()) {
                         return false;
                     }
@@ -168,4 +169,5 @@ public class ExchangeServiceImpl implements ExchangeService {
         }
         return true;
     }
+
 }

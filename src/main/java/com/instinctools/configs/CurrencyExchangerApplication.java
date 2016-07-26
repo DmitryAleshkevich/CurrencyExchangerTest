@@ -10,12 +10,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableNeo4jRepositories(basePackages = "com.instinctools.repositories")
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.instinctools")
+@EnableAsync
 public class CurrencyExchangerApplication extends Neo4jConfiguration{
 
 	public static void main(String[] args) {
