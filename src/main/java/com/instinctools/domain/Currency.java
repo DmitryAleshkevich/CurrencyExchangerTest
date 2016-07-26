@@ -3,11 +3,8 @@ package com.instinctools.domain;
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 
-/**
- * Created by aldm on 1.7.16.
- */
 @NodeEntity
-public class Currency {
+public class Currency implements Comparable<Currency> {
 
     @GraphId
     private Long id;
@@ -61,5 +58,14 @@ public class Currency {
     @Override
     public int hashCode() {
         return name == null ? System.identityHashCode(this) : name.hashCode();
+    }
+
+    @Override
+    public int compareTo(Currency o) {
+        final int byString = this.getName().compareTo(o.getName());
+        if (byString != 0) {
+            return byString;
+        }
+        return Double.compare(this.getSum(),o.getSum());
     }
 }

@@ -2,12 +2,9 @@ package com.instinctools.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Created by aldm on 26.07.16.
- */
 public class CurrencyDTO {
 
-    @JsonProperty(value = "Cur_Name_Eng")
+    @JsonProperty(value = "Cur_Abbreviation")
     private String name;
 
     public CurrencyDTO() {
@@ -20,4 +17,5 @@ public class CurrencyDTO {
     public void setName(String name) {
         this.name = name;
     }
+
 }
